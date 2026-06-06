@@ -107,12 +107,3 @@ http://127.0.0.1:5000
 5. If any metric exceeds threshold → alert is displayed
 6. Every API request is logged to `monitor.log` with timestamp
 
-## Deployment
-
-This app is deployable on **Render** (free tier):
-
-1. Push to GitHub
-2. Connect repo on Render
-3. Set build command: `pip install -r requirements.txt`
-4. Set start command: `gunicorn app:app`
-5. Deploy — Render auto-deploys on every push
