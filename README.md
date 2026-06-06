@@ -53,7 +53,7 @@ http://127.0.0.1:5000
 | `/api/metrics` | GET | Returns all system metrics as JSON |
 | `/api/status` | GET | Health check — returns server status |
 
-## Sample API Response (`/api/metrics`)
+## Dashboard Output
 
 ![Dasboard Output](dashboard.png)
 
