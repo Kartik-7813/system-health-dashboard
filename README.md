@@ -55,30 +55,7 @@ http://127.0.0.1:5000
 
 ## Sample API Response (`/api/metrics`)
 
-```json
-{
-  "timestamp": "21:30:45",
-  "cpu": {
-    "percent": 23.5,
-    "cores": 8
-  },
-  "ram": {
-    "percent": 61.2,
-    "used_gb": 9.8,
-    "total_gb": 16.0
-  },
-  "disk": {
-    "percent": 45.3,
-    "used_gb": 226.5,
-    "total_gb": 500.0
-  },
-  "network": {
-    "upload_mb": 0.012,
-    "download_mb": 0.085
-  },
-  "alerts": []
-}
-```
+![Dasboard Output](dashboard.png)
 
 ## Alert Thresholds
 
