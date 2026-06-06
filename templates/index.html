@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Health Dashboard</title>
+    <style>
+        /* ── Reset & Base ──────────────────────────────── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        /* ── Header ────────────────────────────────────── */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #4A90D9;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        #last-updated {
+            color: #4A90D9;
+            font-weight: bold;
+        }
+
+        /* ── Grid Layout ───────────────────────────────── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto 30px;
+        }
+
+        /* ── Metric Card ───────────────────────────────── */
+        .card {
+            background: #1a1d27;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #2a2d3a;
+            transition: border-color 0.3s;
+        }
+
+        .card:hover { border-color: #4A90D9; }
+
+        .card-title {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .card-value {
+            font-size: 42px;
+            font-weight: bold;
+            color: #4A90D9;
+            margin-bottom: 6px;
+        }
+
+        .card-value span {
+            font-size: 16px;
+            color: #888;
+        }
+
+        .card-sub {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 14px;
+        }
+
+        /* ── Progress Bar ──────────────────────────────── */
+        .progress-bar {
+            background: #2a2d3a;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease, background 0.3s;
+        }
+
+        /* Color changes based on usage level */
+        .fill-green  { background: #27ae60; }
+        .fill-yellow { background: #f39c12; }
+        .fill-red    { background: #e74c3c; }
+
+        /* ── Network Card ──────────────────────────────── */
+        .network-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .net-label { color: #888; font-size: 13px; }
+        .net-value { color: #4A90D9; font-weight: bold; font-size: 13px; }
+
+        /* ── Alerts Section ────────────────────────────── */
+        .alerts-section {
+            max-width: 1100px;
+            margin: 0 auto 20px;
+        }
+
+        .alerts-title {
+            font-size: 13px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .alert-box {
+            background: #2a1a1a;
+            border: 1px solid #e74c3c;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #e74c3c;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .no-alerts {
+            background: #1a2a1a;
+            border: 1px solid #27ae60;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #27ae60;
+            font-size: 13px;
+        }
+
+        /* ── Status Bar ────────────────────────────────── */
+        .status-bar {
+            text-align: center;
+            color: #444;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Header ─────────────────────────────────────── -->
+    <div class="header">
+        <h1>⚙️ System Health Dashboard</h1>
+        <p>Auto-refreshes every 5 seconds &nbsp;|&nbsp; Last updated: <span id="last-updated">--:--:--</span></p>
+    </div>
+
+    <!-- ── Metric Cards ───────────────────────────────── -->
+    <div class="grid">
+
+        <!-- CPU Card -->
+        <div class="card">
+            <div class="card-title">CPU Usage</div>
+            <div class="card-value" id="cpu-percent">--%</div>
+            <div class="card-sub" id="cpu-cores">-- cores</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="cpu-bar" style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- RAM Card -->
+        <div class="card">
+            <div class="card-title">RAM Usage</div>
+            <div class="card-value" id="ram-percent">--%</div>
+            <div class="card-sub" id="ram-detail">-- GB / -- GB</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="ram-bar" style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- Disk Card -->
+        <div class="card">
+            <div class="card-title">Disk Usage</div>
+            <div class="card-value" id="disk-percent">--%</div>
+            <div class="card-sub" id="disk-detail">-- GB / -- GB</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="disk-bar" style="width:0%"></div>
+            </div>
+        </div>
+
+        <!-- Network Card -->
+        <div class="card">
+            <div class="card-title">Network Speed</div>
+            <div class="network-row">
+                <span class="net-label">⬆ Upload</span>
+                <span class="net-value" id="net-upload">-- MB/s</span>
+            </div>
+            <div class="network-row">
+                <span class="net-label">⬇ Download</span>
+                <span class="net-value" id="net-download">-- MB/s</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Alerts ─────────────────────────────────────── -->
+    <div class="alerts-section">
+        <div class="alerts-title">System Alerts</div>
+        <div id="alerts-container">
+            <div class="no-alerts">✅ All systems normal — no alerts</div>
+        </div>
+    </div>
+
+    <!-- ── Status Bar ─────────────────────────────────── -->
+    <div class="status-bar">
+        <span class="status-dot"></span>
+        Live monitoring active &nbsp;|&nbsp; Flask REST API + psutil
+    </div>
+
+    <!-- ── JavaScript ─────────────────────────────────── -->
+    <script>
+        /**
+         * getBarColor(percent)
+         * Returns CSS class based on usage level:
+         * Green  → below 60%
+         * Yellow → 60% to 80%
+         * Red    → above 80%
+         */
+        function getBarColor(percent) {
+            if (percent >= 80) return "fill-red";
+            if (percent >= 60) return "fill-yellow";
+            return "fill-green";
+        }
+
+        /**
+         * updateDashboard()
+         * Fetches metrics from Flask REST API endpoint /api/metrics
+         * Updates all cards and alerts on the dashboard
+         */
+        async function updateDashboard() {
+            try {
+                // Fetch data from Flask REST API
+                const response = await fetch("/api/metrics");
+                const data     = await response.json();
+
+                // ── Update Last Updated Time ────────────
+                document.getElementById("last-updated").textContent = data.timestamp;
+
+                // ── Update CPU Card ─────────────────────
+                const cpu = data.cpu;
+                document.getElementById("cpu-percent").textContent = cpu.percent + "%";
+                document.getElementById("cpu-cores").textContent   = cpu.cores + " logical cores";
+                const cpuBar = document.getElementById("cpu-bar");
+                cpuBar.style.width     = cpu.percent + "%";
+                cpuBar.className       = "progress-fill " + getBarColor(cpu.percent);
+
+                // ── Update RAM Card ─────────────────────
+                const ram = data.ram;
+                document.getElementById("ram-percent").textContent = ram.percent + "%";
+                document.getElementById("ram-detail").textContent  = ram.used_gb + " GB / " + ram.total_gb + " GB";
+                const ramBar = document.getElementById("ram-bar");
+                ramBar.style.width     = ram.percent + "%";
+                ramBar.className       = "progress-fill " + getBarColor(ram.percent);
+
+                // ── Update Disk Card ────────────────────
+                const disk = data.disk;
+                document.getElementById("disk-percent").textContent = disk.percent + "%";
+                document.getElementById("disk-detail").textContent  = disk.used_gb + " GB / " + disk.total_gb + " GB";
+                const diskBar = document.getElementById("disk-bar");
+                diskBar.style.width    = disk.percent + "%";
+                diskBar.className      = "progress-fill " + getBarColor(disk.percent);
+
+                // ── Update Network Card ─────────────────
+                const net = data.network;
+                document.getElementById("net-upload").textContent   = net.upload_mb   + " MB/s";
+                document.getElementById("net-download").textContent = net.download_mb + " MB/s";
+
+                // ── Update Alerts ───────────────────────
+                const alertsContainer = document.getElementById("alerts-container");
+                if (data.alerts.length === 0) {
+                    alertsContainer.innerHTML = '<div class="no-alerts">✅ All systems normal — no alerts</div>';
+                } else {
+                    alertsContainer.innerHTML = data.alerts
+                        .map(alert => `<div class="alert-box">${alert}</div>`)
+                        .join("");
+                }
+
+            } catch (error) {
+                // If fetch fails, show error in console
+                console.error("Failed to fetch metrics:", error);
+            }
+        }
+
+        // ── Auto Refresh ─────────────────────────────────
+        // Call updateDashboard immediately on page load
+        updateDashboard();
+
+        // Then call it every 5000ms (5 seconds)
+        setInterval(updateDashboard, 5000);
+    </script>
+
+</body>
+</html>
