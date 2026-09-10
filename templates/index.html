@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Health Dashboard</title>
     <style>
-        /* ── Reset & Base ──────────────────────────────── */
+       
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -172,7 +172,6 @@
 </head>
 <body>
 
-    <!-- ── Header ─────────────────────────────────────── -->
     <div class="header">
         <h1>⚙️ System Health Dashboard</h1>
         <p>Auto-refreshes every 5 seconds &nbsp;|&nbsp; Last updated: <span id="last-updated">--:--:--</span></p>
@@ -243,7 +242,6 @@
     <!-- ── JavaScript ─────────────────────────────────── -->
     <script>
         /**
-         * getBarColor(percent)
          * Returns CSS class based on usage level:
          * Green  → below 60%
          * Yellow → 60% to 80%
@@ -257,7 +255,7 @@
 
         /**
          * updateDashboard()
-         * Fetches metrics from Flask REST API endpoint /api/metrics
+         * Fetches data from Flask REST API endpoint /api/metrics
          * Updates all cards and alerts on the dashboard
          */
         async function updateDashboard() {
@@ -309,16 +307,12 @@
                 }
 
             } catch (error) {
-                // If fetch fails, show error in console
                 console.error("Failed to fetch metrics:", error);
             }
         }
 
         // ── Auto Refresh ─────────────────────────────────
-        // Call updateDashboard immediately on page load
         updateDashboard();
-
-        // Then call it every 5000ms (5 seconds)
         setInterval(updateDashboard, 5000);
     </script>
 
